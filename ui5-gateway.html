@@ -61,7 +61,7 @@ Content-Type: text/html; charset=ISO-8859-1
       font-size: 2rem;
       text-align: center;
       padding: 50px;
-      background-image: url('tracker.jpg');
+      background-image: url('img/tracker.jpg');
       background-size: cover;
       background-position: center;
       position: relative;
@@ -409,8 +409,8 @@ oInputHistoryModel.setData({
               id: "LoadAct",
               inset: false,
               items: [
-                { label: "Load File EOS", action: "EOS", desc: "Open CERN EOS LFN (/store/...) or PFN (/eos/...)", tooltip: "", icon: "/eos-logo.png" },
-                { label: "Load File AAA", action: "AAA", desc: "Open AAA LFN (/store/...) via the regional EU redirector (falls back to global / US if the file is not found in the EU)", tooltip: "", icon: "/xroot-logo.png" }
+                { label: "Load File EOS", action: "EOS", desc: "Open CERN EOS LFN (/store/...) or PFN (/eos/...)", tooltip: "", icon: "img/eos-logo.png" },
+                { label: "Load File AAA", action: "AAA", desc: "Open AAA LFN (/store/...) via the regional EU redirector (falls back to global / US if the file is not found in the EU)", tooltip: "", icon: "img/xroot-logo.png" }
               ].map(function (item) {
                 return new sap.m.StandardListItem({
                   title: item.label,
@@ -543,7 +543,7 @@ oInputHistoryModel.setData({
   var oRightVBox = new sap.m.VBox({
     items: [
       new sap.m.Panel({
-        headerText: "Optional",
+        headerText: "Advanced Options",
         expandable: true,
         expanded: true,
 
@@ -575,17 +575,18 @@ oInputHistoryModel.setData({
               new sap.m.Label({ text: "Simulation Geometry" }),
               simGeoInput
             ]
-          }),
+          })
+        ]}),
     new sap.ui.core.HTML({ content: '<br></br>' }),
             new sap.ui.core.HTML({ content: '<h3 class="cmsSubtitle">Predefined Test Samples</h3>' }),
 
             sampleList,
             new sap.ui.core.HTML({ content: '<br></br>' }),
             new sap.ui.core.HTML({ content: 'Status' })
-        ]
-      })
     ]
   });
+
+
 
   // =========================
   // PAGE
