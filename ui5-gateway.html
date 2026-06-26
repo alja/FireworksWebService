@@ -363,7 +363,18 @@ oInputHistoryModel.setData({
     "inputSimGeoHistory",
     PREDEFINED.simgeo
   );
-
+var oRadioGroup = new sap.m.RadioButtonGroup({
+        columns: 2,           // horizontal layout
+        selectedIndex: 0,
+        buttons: [
+            new sap.m.RadioButton({ text: "CMSSW_17_X data or older" }),
+            new sap.m.RadioButton({ text: "CMSSW_20_X"})
+        ],
+        select: function(oEvent) {
+            var idx = oEvent.getParameter("selectedIndex");
+            console.log("Selected:", idx);
+        }
+    });
   // attach model
   fileInput.setModel(oHistoryModel);
   configInput.setModel(oHistoryModel);
@@ -404,7 +415,9 @@ oInputHistoryModel.setData({
                 }
               }
             }),*/,
+            
             fileInput,
+            oRadioGroup,
             new sap.m.List({
               id: "LoadAct",
               inset: false,
