@@ -7,10 +7,14 @@
 my $mod_perl_req = shift;
 
 use CGI;
-
-use IO::Socket qw(AF_INET SOCK_STREAM);
-use IO::Socket::Timeout;
 use File::Basename;
+
+# Setup absolute inclusion paths for your custom module
+use FindBin;
+use lib '/var/www/html/cmsShowWeb';
+
+# Import shared functions from your common library
+use RevetorCommon;
 
 #use Data::Dumper;
 #$Data::Dumper::Sortkeys = 1;
@@ -19,8 +23,8 @@ use File::Basename;
 
 my $q = new CGI;
 
-$EVE_HOST   = "localhost";
-$EVE_PORT   =  6666;
+$EVE_HOST   = $RevetorCommon::EVE_HOST;
+$EVE_PORT   = $RevetorCommon::EVE_PORT;
 
 @ADMINS = qw( amraktad matevz );
 
@@ -112,16 +116,8 @@ $SAMPLE_DIR = "/data2/CMSSW_12_5_relval-samples";
   RelValZEEMiniaod.root
 };
 
-# CGI script to connect to an Event Display server.
-#
-# Reports progress as it goes and at the end outputs a link to
-# a newly spawned instance.
-# And a reminder that a tunnel needs to be made at this point.
-#
-# Once things more-or-less work, we can just redirect on success:
-#   print $q->redirect('http://$REDIR_HOST:$REDIR_PORT/...');
-# ... or do some JS magick, or whatever.
-
+################################################################################
+# Helper blocks
 ################################################################################
 
 sub cgi_beg
@@ -140,115 +136,8 @@ sub cgi_beg
 FNORD
 }
 
-sub cgi_print
-{
-  print "<p><pre>", join("\n", @_), "</pre>\n";
-}
-
-sub cgi_end
-{
-  print<<"FNORD";
-
-</body>
-</html>
-FNORD
-}
-
-sub cgi_die
-{
-  print "<p><b> $_[0] </b>\n";
-  cgi_end();
-  exit(1);
-}
-
-sub flush
-{
-  defined $mod_perl_req ? $mod_perl_req->rflush() : select()->flush();
-}
-
-################################################################################
-# Connect and redirect
-################################################################################
-
-sub recv_with_timeout
-{
-  my $sock = shift;
-  my $size = shift;
-  my $timeout = shift || 5;
-  my $err_to  = shift || 100;
-  my $buf;
-  my $sum_t = 0;
-
-  $sock->read_timeout($timeout);
-
-  my $ret;
-  while (not defined ($ret = $sock->recv($buf, $size)))
-  {
-    $sum_t += $timeout;
-    cgi_print "Waiting for server response, ${sum_t}s [ max = ${err_to}s ]";
-    flush();
-    if ($sum_t >= $err_to) {
-      return undef;
-    }
-  }
-  chomp  $buf;
-  return $buf;
-}
-
-sub connect_to_server
-{
-  my $request = shift;
-  my $verbose = shift;
-  my $buf;
-
-  cgi_print "Connecting to local cmsShowWeb forker now ..." if $verbose;
-
-  my $client = IO::Socket->new(
-      Domain   => AF_INET,
-      Type     => SOCK_STREAM,
-      proto    => 'tcp',
-      PeerHost => $EVE_HOST,
-      PeerPort => $EVE_PORT,
-      Timeout  => 5
-  ) || cgi_die "Can't open socket: $@";
-
-  IO::Socket::Timeout->enable_timeouts_on($client);
-
-  cgi_print "Connected to $EVE_PORT" if $verbose;
-
-  $buf = recv_with_timeout($client, 1024, 5, 30);
-  
-  unless (length($buf)) {
-    my $err_str = $!;
-    cgi_print "Error receiving server greeting, error: ${err_str}.";
-    $client->close();
-    return $buf;
-  }
-  cgi_print "Server greeting: $buf" if $verbose;
-
-  cgi_print "Sending $request" if $verbose;
-
-  # MUST include trailing \n, the server is looking for it!
-
-  my $size = $client->send($request);
-  cgi_print "Sent data of length: $size" if $verbose;
-
-  flush();
-
-
-  $buf = recv_with_timeout($client, 1024, 5, 300);
- 
-  if (length($buf)) {
-    cgi_print "Server response: $buf" if $verbose;
-  } else {
-    my $err_str = $!;
-    cgi_print "Error receiving server response, error: ${err_str}.";
-  }
-
-  $client->close();
-
-  return $buf;
-}
+# NOTE: cgi_print, cgi_end, cgi_die, flush, recv_with_timeout, 
+# and connect_to_server are now provided cleanly by RevetorCommon.pm
 
 sub start_session
 {
@@ -260,10 +149,9 @@ sub start_session
   $fwconfig  =~ s/^\s+|\s+$//g;
 
   if ($q->url_param('fwconfig') && $q->url_param('fwconfig') =~ m!^\w[-\w]+\.fwc$!)
-	  {
-		      $fwconfig = $q->url_param('fwconfig');
-	      }
-
+  {
+      $fwconfig = $q->url_param('fwconfig');
+  }
 
   if ($fwconfig ne "" and $fwconfig !~ m!^http!) {
       $fwconfig = ${fwconfigdir} . "/" . ${fwconfig};
@@ -273,7 +161,7 @@ sub start_session
     $fwconfig = $ENV{'DOCUMENT_ROOT'} . $1;
   }
 
-  # reco geomtery
+  # reco geometry
   my $fwgeo = $q->param('FWgeo');
  
   if ($q->url_param('fwgeo') )
@@ -281,7 +169,7 @@ sub start_session
     $fwgeo = $q->url_param('fwgeo');
   }
   
-  # simulation geomtery
+  # simulation geometry
   my $simgeo = $q->param('FWsim');
  
   if ($q->url_param('simgeo') )
@@ -289,7 +177,6 @@ sub start_session
     $simgeo = $q->url_param('simgeo');
     cgi_print "got  SIMGEO ";
   }
-
 
   my $buf = connect_to_server(qq{{"action": "load", "file": "$file",
                                   "logdir": "$LOGFILE_PFX", "logdirurl": "$logdirurl",
@@ -318,15 +205,10 @@ sub start_session
 
   my $URL = &$PORT_MAP_FOO($resp);
 
-  # For opening on localhost directly.
-  # print "xdg-open $URL\n";
-  # exec  "xdg-open $URL";
-
   if ($AUTO_REDIRECT) {
     print "<META HTTP-EQUIV=refresh CONTENT=\"0;URL=$URL\">\n";
     return;
   }
-
 
   print<<"FNORD";
 <h2>
@@ -353,7 +235,6 @@ FNORD
   }
 }
 
-
 ################################################################################
 # Main & Form stuff
 ################################################################################
@@ -365,12 +246,6 @@ if ($CONFIG_ERROR)
     cgi_print "Startup error: $CONFIG_ERROR";
     return;
 }
-
-# Usage of INET sockets in cgi-bin under SE requires:
-#   /usr/sbin/setsebool -P httpd_can_network_connect 1
-# Maybe we should use UNIX sockets.
-
-# cgi_print("File=".$q->param('File'));
 
 my @names = $q->url_param();
 
@@ -401,8 +276,6 @@ if ($PRINT_ENV)
   print "</pre>\n";
 }
 
-# Remap URL param load_file to POST param "Action" "Load File EOS" but only
-# if POST "Action" is not already set.
 if ($q->url_param('load_file') && not $q->param('Action'))
 {
   $q->param('Action', "Load File EOS");
@@ -413,7 +286,6 @@ if ($q->url_param('load_file_aaa') && not $q->param('Action'))
   $q->param('Action', "Load File AAA");
   $q->param('File',   $q->url_param('load_file_aaa'));
 }
-
 
 if ($q->url_param('load_sample') && not $q->param('Action'))
 {
@@ -495,7 +367,7 @@ elsif ($q->param('Action') eq 'Show Usage')
   my $buf = connect_to_server(qq{{"action": "report_usage"}\n}, 0);
   my $r = eval $buf;
   print "Currently serving $r->{current_sessions} (total $r->{total_sessions} since service start).";
-  print "<br><br>\n";# Request and show current session, users, run times ... log links for matchin user
+  print "<br><br>\n";
   $r->{'table'} =~ s/$ENV{'DOCUMENT_ROOT'}//g;
   print $r->{'table'};
   print "<p><a href=$BACK_URL>Back to main page</a>\n";
@@ -509,7 +381,6 @@ else
 
   print $q->start_form(), "\n";
 
-  # Default hidden submit button to eat up <Enter> presses from textfields
   print $q->submit('Action', "nothing", undef, hidden, "onclick=\"event.preventDefault();\""), "\n";
 
   print("<h3> Open Event Display </h3>\n");
@@ -519,14 +390,6 @@ else
   print join("\n", map { "<tr><td>" . $q->submit('Action', "Load File $_") . "</td><td>" . $SOURCES->{$_}{'desc'} . "</td></tr>"} (sort keys %$SOURCES));
   print "\n</table>\n";
 
-  # Proto for running locate on remote server. Locks up on caches, need objects in
-  # %SOURCES with flag allow_xrdfs_locate.
-  # for my $k (keys %SOURCES) {
-  #  if ($SOURCES{$k} =~ m!root://([\w\d\.-]+(?::\d+)?)/!) {
-  #    print "<br>xrdfs $1 locate -m\n";
-  #  }
-  # }
-
   print "<br>\n";
   for my $f (@SAMPLES)
   {
@@ -535,17 +398,17 @@ else
   }
   print "<br><br>\n";
 
-
   ## FWC CONFIGURATION ##
   print("<h3>Configuration (optional)</h3>");
   print("Configration is auto loaded relative to the data file content. <br>
   If you choose to use custom configuration, enter name of fireworks configuration file residing in  <a href=\"${CONFIG_WWW}${CERN_UPN}\">${CONFIG_WWW}${CERN_UPN}</a> or URL<br>\n");
   print $q->textfield('FWconfig', '', 150, 512), "\n";
 
-  ## FWC geomtery ##
+  ## FWC geometry ##
   print("<h3>Geometry (optional)</h3>");
   print("EOS path reco to geometry file. <br>");
   print $q->textfield('FWgeo', '', 150, 512), "\n";
+  
   ## Sim geometry ##
   print("<h3>Simulation Geometry (optional)</h3>");
   print("EOS path to simulation geometry file. <br>");
@@ -554,7 +417,6 @@ else
   ## STATUS ##
   print "<br><br>\n";
 
-  ## If logfile dir exists, tell user about it.
   if (-e $LOGFILE_PFX) {
     print "Your recent logs are available here: <a href=\"$LOGFILE_WWW\">$LOGFILE_WWW</a>\n";
   }
@@ -579,8 +441,6 @@ else
   print "<a href=\"mailto:cmstalk+visualization\@cern.ch\">cmstalk+visualization\@cern.ch</a></p> ";
   printf "CMS Talk archive ";
   print "<a href=\"https://cms-talk.web.cern.ch/c/offcomp/visualization/165\">Visualization Discussion</a></p>";
-  # printf "Known issues: ";
-  # print "<a href=\"https://github.com/alja/FireworksWeb/issues\">github issues</a></p>";
   print "</footer>";
 }
 
