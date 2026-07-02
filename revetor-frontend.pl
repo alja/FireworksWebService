@@ -16,15 +16,13 @@ use lib '/var/www/html/cmsShowWeb';
 # Import shared functions from your common library
 use RevetorCommon;
 
+
 #use Data::Dumper;
 #$Data::Dumper::Sortkeys = 1;
 #use LWP::UserAgent qw();
 #my $ua = LWP::UserAgent->new();
 
 my $q = new CGI;
-
-$EVE_HOST   = $RevetorCommon::EVE_HOST;
-$EVE_PORT   = $RevetorCommon::EVE_PORT;
 
 @ADMINS = qw( amraktad matevz );
 
@@ -41,15 +39,8 @@ $LOGFILE_PFX = $ENV{'DOCUMENT_ROOT'} . $LOGFILE_WWW;
 $CONFIG_WWW = "/config/";
 
 $IS_TEST = $ENV{'SCRIPT_NAME'} =~ m/-test.pl$/;
-$BACK_URL="https://fireworks.cern.ch/cmsShowWeb/revetor-yuxiao.pl";
+$BACK_URL="https://${REDIR_HOST}/cmsShowWeb/revetor-yuxiao.pl";
 
-if ($IS_TEST)
-{
-  $EVE_PORT    =  6669;
-  $LOGFILE_WWW = "/logs-test/" . $CERN_UPN;
-  $LOGFILE_PFX = $ENV{'DOCUMENT_ROOT'} . $LOGFILE_WWW;
-  $CONFIG_WWW = "/config-test/";
-}
 $AUTO_REDIRECT=1;
 $SOURCES = {}; # name -> prefix mapping
 $error_str;
@@ -141,6 +132,7 @@ FNORD
 
 sub start_session
 {
+  $RevetorCommon::EVE_PORT = 6666;
   my $file = shift;
   my $logdirurl = "https://${REDIR_HOST}${LOGFILE_WWW}/";
   my $fwconfig = $q->param('FWconfig');
@@ -177,6 +169,13 @@ sub start_session
     $simgeo = $q->url_param('simgeo');
     cgi_print "got  SIMGEO ";
   }
+
+  if ($q->url_param('port') )
+  {
+    $RevetorCommon::EVE_PORT = $q->url_param('port');
+    cgi_print "set new port $RevetorCommon::EVE_PORT";
+  }
+
 
   my $buf = connect_to_server(qq{{"action": "load", "file": "$file",
                                   "logdir": "$LOGFILE_PFX", "logdirurl": "$logdirurl",

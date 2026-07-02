@@ -1,4 +1,3 @@
-Content-Type: text/html; charset=ISO-8859-1
 
 <!DOCTYPE html>
 <html lang="en">
@@ -388,33 +387,6 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
 
           items: [
             new sap.ui.core.HTML({ content: '<h2 class="cmsSubtitle">Open Event Display</h2>' }),
-            /*
-            new sap.m.Input({
-              id: "fileInput",
-              placeholder: "Enter file name(s), separated by spaces",
-              width: "100%",
-              liveChange: function (e) {
-                document.forms[0].File.value = e.getParameter("value");
-              },
-              showSuggestion: true,
-              suggestionItems: {
-                path: "/history",
-                template: new sap.ui.core.Item({ text: "{text}" })
-              },
-              suggest: function (oEvent) {
-                const sValue = oEvent.getParameter("suggestValue").toLowerCase();
-                const aFiltered = getHistory()
-                  .filter(h => h.toLowerCase().includes(sValue))
-                  .map(text => ({ text }));
-                oHistoryModel.setData({ history: aFiltered });
-              },
-              change: function (oEvent) {
-                const sValue = oEvent.getParameter("value");
-                if (sValue) {
-                  addToHistory(sValue);
-                }
-              }
-            }),*/,
             
             fileInput,
             oRadioGroup,
@@ -434,13 +406,15 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
                   icon: item.icon,
                   type: "Active",
                   press: function () {
-                    let path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_file=";
+                    let path = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_file=";
                     let fileInput = sap.ui.getCore().byId("fileInput");
                     let configInput = sap.ui.getCore().byId("pathConfiguration");
                     let geometryInput = sap.ui.getCore().byId("pathGeometry");
                     let simGeoInput = sap.ui.getCore().byId("pathSimGeo");
 
                     let match = true;
+
+                    this.setType(sap.m.ListType.Inactive);
 
                     if (this.getTitle().startsWith("Load File")) {
                       if (!(fileInput.getValue().startsWith("/eos") || fileInput.getValue().startsWith("/store"))) {
@@ -471,14 +445,25 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
                     if (this.getTitle() == "Load File EOS") {
                       path += encodeURIComponent(fileInput.getValue());
 
+                      // check experimental port only for EOS and AAA
+                      if (oRadioGroup.getSelectedIndex() === 1) {
+                        path += "&port=";
+                        path += encodeURIComponent(6677);
+                      }
                     }
                     else if (this.getTitle() == "Load File AAA") {
-                      path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_file_aaa=";
+                      path = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_file_aaa=";
                       path += encodeURIComponent(fileInput.getValue());
+
+                     // check experimental port only for EOS and AAA
+                      if (oRadioGroup.getSelectedIndex() === 1) {
+                        path += "&port=";
+                        path += encodeURIComponent(6677);
+                      }
 
                     }
                     else {
-                      path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_sample=";
+                      path = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_sample=";
                       // path += "/data2/CMSSW_12_5_relval-samples/";
                       path += encodeURIComponent(this.getProperty("info"));
                     }
@@ -497,6 +482,17 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
                       path += "&simgeo=";
                       path += encodeURIComponent(simGeoInput.getValue());
                     }
+                    fileInput.setEnabled(false);
+                    var oPage = sap.ui.getCore().byId("mainPage");
+                   //oPage.setBusy(true);
+
+var oBusy = new sap.m.BusyDialog({
+    title: "Request Submitted",
+    text: "Request submitted to the Fireworks Web service."
+});
+
+oBusy.open()
+
                     sap.m.URLHelper.redirect(path, false)
                     //  var oForm = document.forms[0];
                     //   oForm.Action.value = item.action;
@@ -514,7 +510,7 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   // =======================
   // SAMPLES
   // =======================
-  let bpath = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_sample=";
+  let bpath = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_sample=";
         var oRow1 = new sap.m.HBox({
           items: [
             new sap.m.Button({ text: "RelVal MuMu reco ", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValMuMureco.root", false) } }),
@@ -600,14 +596,55 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   });
 
 
+        var oLink1 = new sap.m.Link({
+          text: "Mail to",
+          href: "mailto:cmstalk+visualization@cern.ch",
+          target: "cmstalk+visualization@cern.ch",
+          layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
+        });
+
+        var oLink2 = new sap.m.Link({
+          text: "CMS talk archive",
+          href: "https://cms-talk.web.cern.ch/c/offcomp/visualization/165",
+          layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
+        });
+
+        var oLink3 = new sap.m.Link({
+          text: "Low level interface",
+          href: "https://fireworks.cern.ch/cmsShowWeb/revetor.pl",
+          layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
+        });
+
+  
+  // Footer Bar with links
+  var oFooter = new sap.m.Bar({
+    contentMiddle: [
+      new sap.m.HBox({
+        //justifyContent: "SpaceBetween",
+        items:
+          [
+            oLink1,
+
+            new sap.m.Text({ text: " | " }),
+            oLink2,
+
+            new sap.m.Text({ text: " | " }),
+            oLink3
+          ]
+      })
+    ]
+  });
+
 
   // =========================
   // PAGE
   // =========================
-  var oPage = new sap.m.Page({
+  var oPage = new sap.m.Page("mainPage", {
     showHeader: false,
     content: [oHeader, oLeftVBox, oRightVBox]
-  });
+  });  
+  
+  oPage.setFooter(oFooter);
 
   new sap.m.Shell({ app: oPage }).placeAt("content");
 

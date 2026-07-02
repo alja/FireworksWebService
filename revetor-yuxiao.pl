@@ -41,6 +41,8 @@ my $html = <$fh>;
 close($fh);
 
 $html =~ s/MARK/$mark/g;
+my $xx =  $ENV{'HTTP_HOST'};
+$html =~ s/MACHINE/$xx/g;
 
 print $html;
 
