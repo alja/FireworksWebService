@@ -31,7 +31,7 @@ if ($buf =~ /(\d+).*?(\d+)/)
 
 print $q->header('text/html');
 
-my $file = "/var/www/html/cmsShowWeb/ui5-gateway.html";
+my $file = "/var/www/html/cmsShowWeb/ui5-gateway-inc.html";
 
 open(my $fh, '<', $file)
     or die "Cannot open $file: $!";
