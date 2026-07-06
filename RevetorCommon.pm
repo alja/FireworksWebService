@@ -13,19 +13,21 @@ our @EXPORT = qw(
     connect_to_server
 );
 
-use IO::Socket qw(AF_INET SOCK_STREAM);
+use IO::Socket::INET;
 use IO::Socket::Timeout;
 
 our $EVE_HOST = 'localhost';
 our $EVE_PORT = 6666;
 
-sub cgi_print
-{
+############################################################
+# CGI helpers
+############################################################
+
+sub cgi_print {
     print "<p><pre>", join("\n", @_), "</pre>\n";
 }
 
-sub cgi_end
-{
+sub cgi_end {
     print <<"EOF";
 
 </body>
@@ -33,40 +35,44 @@ sub cgi_end
 EOF
 }
 
-sub cgi_die
-{
+sub cgi_die {
     print "<p><b> $_[0] </b>\n";
     cgi_end();
     exit(1);
 }
 
-sub flush
-{
+sub flush {
     select()->flush();
 }
 
-sub recv_with_timeout
-{
-    my $sock    = shift;
-    my $size    = shift;
-    my $timeout = shift || 5;
-    my $err_to  = shift || 100;
+############################################################
+# Socket receive with timeout (FIXED)
+############################################################
 
-    my $buf;
-    my $sum_t = 0;
+sub recv_with_timeout {
+    my ($sock, $size, $timeout, $err_to) = @_;
+    $timeout ||= 5;
+    $err_to  ||= 100;
 
     $sock->read_timeout($timeout);
 
-    my $ret;
-    while (not defined ($ret = $sock->recv($buf, $size)))
-    {
+    my $buf = '';
+    my $sum_t = 0;
+
+    while (1) {
+
+        my $tmp;
+        my $ret = $sock->recv($tmp, $size);
+
+        # success with data
+        if (defined $ret && length($tmp)) {
+            $buf = $tmp;
+            last;
+        }
+
         $sum_t += $timeout;
 
-        cgi_print(
-            "Waiting for server response, ${sum_t}s [ max = ${err_to}s ]"
-        );
-
-        flush();
+        warn "Waiting for server response (${sum_t}s / ${err_to}s)\n";
 
         return undef if $sum_t >= $err_to;
     }
@@ -75,61 +81,55 @@ sub recv_with_timeout
     return $buf;
 }
 
-sub connect_to_server
-{
+############################################################
+# Connect to backend server
+############################################################
+
+sub connect_to_server {
     my ($request, $verbose) = @_;
 
-    cgi_print("Connecting to local cmsShowWeb forker now ...")
-        if $verbose;
+    cgi_print("Connecting to cmsShowWeb backend...") if $verbose;
 
-    my $client = IO::Socket->new(
-        Domain   => AF_INET,
-        Type     => SOCK_STREAM,
-        proto    => 'tcp',
+    my $client = IO::Socket::INET->new(
         PeerHost => $EVE_HOST,
         PeerPort => $EVE_PORT,
-        Timeout  => 5
+        Proto    => 'tcp',
+        Type     => SOCK_STREAM,
+        Timeout  => 5,
     ) || cgi_die("Can't open socket: $@");
 
     IO::Socket::Timeout->enable_timeouts_on($client);
 
-    cgi_print("Connected to $EVE_PORT")
-        if $verbose;
+    cgi_print("Connected to port $EVE_PORT") if $verbose;
 
     my $buf = recv_with_timeout($client, 1024, 5, 30);
 
-    unless (length($buf))
-    {
+    unless (defined $buf && length($buf)) {
         my $err = $!;
-        cgi_print("Error receiving server greeting, error: $err.");
+        cgi_print("Error receiving server greeting: $err");
         $client->close();
-        return $buf;
+        return '';
     }
 
-    cgi_print("Server greeting: $buf")
-        if $verbose;
+    cgi_print("Server greeting: $buf") if $verbose;
 
-    cgi_print("Sending $request")
-        if $verbose;
+    cgi_print("Sending request...") if $verbose;
 
     my $size = $client->send($request);
+    unless ($size) {
+        cgi_die("Failed to send request: $!");
+    }
 
-    cgi_print("Sent data of length: $size")
-        if $verbose;
+    cgi_print("Sent $size bytes") if $verbose;
 
     flush();
 
     $buf = recv_with_timeout($client, 1024, 5, 300);
 
-    if (length($buf))
-    {
-        cgi_print("Server response: $buf")
-            if $verbose;
-    }
-    else
-    {
-        my $err = $!;
-        cgi_print("Error receiving server response, error: $err.");
+    if (defined $buf && length($buf)) {
+        cgi_print("Server response received") if $verbose;
+    } else {
+        cgi_print("Error receiving server response: $!");
     }
 
     $client->close();
@@ -138,4 +138,3 @@ sub connect_to_server
 }
 
 1;
-
