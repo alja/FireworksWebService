@@ -173,7 +173,7 @@ sub start_session
   if ($q->url_param('port') )
   {
     $RevetorCommon::EVE_PORT = $q->url_param('port');
-    cgi_print "set new port $RevetorCommon::EVE_PORT";
+    # cgi_print "set new port $RevetorCommon::EVE_PORT";
   }
 
 
