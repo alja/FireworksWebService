@@ -96,7 +96,12 @@ sub connect_to_server {
         Proto    => 'tcp',
         Type     => SOCK_STREAM,
         Timeout  => 5,
-    ) || cgi_die("Can't open socket: $@");
+    );
+
+    unless ($client) {
+      cgi_print("Can't open socket: $!") if $verbose;
+      return undef;
+    }
 
     IO::Socket::Timeout->enable_timeouts_on($client);
 
