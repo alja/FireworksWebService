@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head><meta charset="UTF-8" />
@@ -132,6 +131,228 @@
   
     .sapUiBody {
       padding: 0 !important;
+    }
+
+    /* Input -> version -> load steps, grouped in one panel */
+    .loadPanel {
+      box-sizing: border-box;
+      width: min(760px, calc(100% - 2rem));
+      margin: 1.5rem auto 0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 1rem 1.25rem 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stepLabel {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0.9rem 0 0.4rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    .stepLabel .stepNum {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      background: #1a8cff;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    /* "Open Event Display" GO buttons */
+    /* Optional cmsShowWeb.exe options, collapsed inside the load panel */
+    .optionsPanel.sapMPanel,
+    .optionsPanel .sapMPanelContent,
+    .optionsPanel .sapMPanelHdr,
+    .optionsPanel .sapMPanelWrappingDiv {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .optionsPanel {
+      margin-top: 0.6rem;
+    }
+
+    .optionsPanel .sapMPanelContent {
+      padding: 0 0 0.5rem 1.5rem !important;
+    }
+
+    /* Sample events: a low-key alternative to the main workflow */
+    .samplesSection {
+      box-sizing: border-box;
+      width: min(760px, calc(100% - 2rem));
+      margin: 2rem auto 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .samplesTitle {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    .sampleNote {
+      font-size: 0.9rem;
+      color: #999;
+      margin: 0.2rem 0 0.6rem;
+    }
+
+    .sampleRow {
+      align-items: center;
+    }
+
+    .sampleRowLabel {
+      display: inline-block;
+      width: 5.5rem;
+      color: #aaa;
+      font-family: var(--sapFontFamily, "72", Arial, sans-serif);
+      font-size: 0.875rem;
+    }
+
+    /* EOS / AAA sliding pill next to the GO button */
+    .goGroup {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      width: fit-content;
+      max-width: 100%;
+      height: 3.6rem;
+      margin: 1.2rem 0 0;
+    }
+
+    .accessSeg {
+      position: relative;
+      display: flex;
+      align-self: center;
+      align-items: center;
+      padding: 4px;
+      border-radius: 999px;
+      background: #2c333b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .accessSeg button {
+      position: relative;
+      z-index: 1;
+      width: 3.6rem;
+      height: 2.2rem;
+      border: none;
+      border-radius: 999px;
+      background: none;
+      color: #aaa;
+      font-family: var(--sapFontFamily, "72", Arial, sans-serif);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .accessSeg button.on {
+      color: #fff;
+    }
+
+    .accessSeg button:disabled {
+      color: #555;
+      cursor: not-allowed;
+    }
+
+    .accessSeg .thumb {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 3.6rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      background: #1a8cff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s cubic-bezier(0.4, 1.4, 0.6, 1);
+    }
+
+    .accessSeg[data-sel="AAA"] .thumb {
+      transform: translateX(3.6rem);
+    }
+
+    /* "Launch Event Display" GO button */
+    .goBtn.sapMBtn {
+      flex: 0 1 auto;
+      width: auto;
+      height: auto !important;
+      padding: 0 !important;
+    }
+
+    .goBtn .sapMBtnInner {
+      width: 100%;
+      height: 3.6rem !important;
+      padding: 0 2.5rem !important;
+      border: none !important;
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, #2b9bff, #0a5fb8) !important;
+      box-shadow: 0 4px 14px rgba(26, 140, 255, 0.4) !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .goBtn:not(.sapMBtnDisabled):hover .sapMBtnInner {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(26, 140, 255, 0.55) !important;
+    }
+
+    .goBtn:not(.sapMBtnDisabled):active .sapMBtnInner {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px rgba(26, 140, 255, 0.4) !important;
+    }
+
+    .goBtn .sapMBtnContent,
+    .goBtn .sapMBtnText {
+      color: #fff !important;
+      font-size: 1.15rem !important;
+      font-weight: 700 !important;
+      line-height: normal !important;
+    }
+
+    .goBtn .sapMBtnContent::after {
+      content: "\279C";
+      margin-left: 0.6rem;
+      transition: margin-left 0.15s ease;
+    }
+
+    .goBtn:not(.sapMBtnDisabled):hover .sapMBtnContent::after {
+      margin-left: 0.9rem;
+    }
+
+    /* muted look while no valid path is entered */
+    .goBtn.sapMBtnDisabled {
+      opacity: 1 !important;
+    }
+
+    .goBtn.sapMBtnDisabled .sapMBtnInner {
+      background: #3a3f45 !important;
+      box-shadow: none !important;
+    }
+
+    .goBtn.sapMBtnDisabled .sapMBtnContent,
+    .goBtn.sapMBtnDisabled .sapMBtnText {
+      color: #8a8f95 !important;
+    }
+
+    .goDesc {
+      display: block;
+      font-size: 0.85rem;
+      color: #999;
+      margin: 0.5rem 0 1rem;
+      padding: 0 0.2rem;
     }
   </style>
   </head>
@@ -374,11 +595,180 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
             console.log("Selected:", idx);
         }
     });
+  fileInput.setPlaceholder("/store/... or /eos/...");
+
+  function isValidPath(v) {
+    v = (v || "").trim();
+    return v.startsWith("/eos") || v.startsWith("/store");
+  }
+
+  // Single GO button with a small EOS / AAA sliding pill next to it
+  let accessMode = "EOS";
+  let aaaAllowed = true;
+  let oGoButton, oGoDesc;
+
+  function selectedAction() {
+    return LOAD_ACTIONS.find(a => a.action == accessMode) || LOAD_ACTIONS[0];
+  }
+
+  // Sync the selector's DOM (plain HTML inside the UI5 layout) with the state
+  function renderAccessSeg() {
+    document.querySelectorAll(".accessSeg").forEach(seg => seg.dataset.sel = accessMode);
+    document.querySelectorAll(".accessSeg button").forEach(b => {
+      b.classList.toggle("on", b.dataset.v == accessMode);
+      b.disabled = b.dataset.v == "AAA" && !aaaAllowed;
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    const b = e.target.closest(".accessSeg button");
+    if (b && !b.disabled) {
+      accessMode = b.dataset.v;
+      updateLoadState(fileInput.getValue());
+    }
+  });
+
+  function updateLoadState(v) {
+    const ok = isValidPath(v);
+    fileInput.setValueState(!v || ok ? "None" : "Error");
+    fileInput.setValueStateText("Path must start with /eos/ or /store/");
+    if (!oGoButton) return;
+
+    // AAA only resolves LFNs, so it needs a /store path
+    const isStore = (v || "").trim().startsWith("/store");
+    aaaAllowed = !v || isStore;
+    if (!aaaAllowed && accessMode == "AAA") {
+      accessMode = "EOS";
+    }
+    renderAccessSeg();
+
+    const item = selectedAction();
+    oGoDesc.setText(item.desc);
+    oGoButton.setEnabled(item.action == "AAA" ? isStore : ok);
+  }
+
+  fileInput.attachLiveChange(e => updateLoadState(e.getParameter("value")));
+  fileInput.attachChange(e => updateLoadState(e.getParameter("value")));
+
+  function stepLabel(n, text) {
+    return new sap.ui.core.HTML({
+      content: '<div class="stepLabel"><span class="stepNum">' + n + '</span>' + text + '</div>'
+    });
+  }
+
+  // Optional cmsShowWeb.exe command line options
+  const OPTION_INPUTS = [configInput, geoInput, simGeoInput];
+
+  var oOptionsPanel = new sap.m.Panel({
+    expandable: true,
+    expanded: true,
+    content: [
+      new sap.ui.layout.form.SimpleForm({
+        editable: true,
+        layout: "ResponsiveGridLayout",
+        labelSpanXL: 4, labelSpanL: 4, labelSpanM: 4,
+        emptySpanXL: 0, emptySpanL: 0, emptySpanM: 0,
+        content: [
+          new sap.m.Label({ text: "Configuration  (--config)" }),
+          configInput,
+          new sap.m.Label({ text: "Reco geometry  (--geom)" }),
+          geoInput,
+          new sap.m.Label({ text: "Simulation geometry  (--simGeo)" }),
+          simGeoInput
+        ]
+      })
+    ]
+  }).addStyleClass("optionsPanel");
+
+  // Show how many options are set, so pre-filled history values are not missed
+  function updateOptionsHeader() {
+    const n = OPTION_INPUTS.filter(i => (i.getValue() || "").trim()).length;
+    oOptionsPanel.setHeaderText("Optional cmsShowWeb.exe options" + (n ? "  (" + n + " set)" : ""));
+  }
+
+  configInput.attachLiveChange(updateOptionsHeader);
+  OPTION_INPUTS.forEach(i => i.attachChange(updateOptionsHeader));
+  geoInput.attachSelectionChange(updateOptionsHeader);
+  simGeoInput.attachSelectionChange(updateOptionsHeader);
+
   // attach model
   fileInput.setModel(oHistoryModel);
   configInput.setModel(oHistoryModel);
   geoInput.setModel(oHistoryModel);
   simGeoInput.setModel(oHistoryModel);
+
+  const LOAD_ACTIONS = [
+    { action: "EOS", desc: "CERN EOS LFN (/store/...) or PFN (/eos/...)" },
+    { action: "AAA", desc: "AAA LFN (/store/...) via the EU redirector, falling back to global / US if not found" }
+  ];
+
+  // =========================
+  // OPEN EVENT DISPLAY
+  // =========================
+  function openEventDisplay(item) {
+    let path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_file=";
+    let fileInput = sap.ui.getCore().byId("fileInput");
+    let configInput = sap.ui.getCore().byId("pathConfiguration");
+    let geometryInput = sap.ui.getCore().byId("pathGeometry");
+    let simGeoInput = sap.ui.getCore().byId("pathSimGeo");
+
+    let match = true;
+
+    if (item.action == "EOS" || item.action == "AAA") {
+      if (!(fileInput.getValue().startsWith("/eos") || fileInput.getValue().startsWith("/store"))) {
+        let sValue = fileInput.getValue();
+
+        let oDialog = new sap.m.Dialog({
+          title: "Invalid Path",
+          type: "Message",
+          content: new sap.m.Text({ text: "The input path \"" + sValue + "\" is invalid.\nIt must start with /eos/ or /store." }),
+          beginButton: new sap.m.Button({
+            text: "OK",
+            press: function () {
+              oDialog.close();
+            }
+          }),
+          afterClose: function () {
+            oDialog.destroy(); // clean up
+          }
+        });
+
+        oDialog.setContentHeight("200px");
+        oDialog.open();
+        return;
+
+      }
+    }
+
+    if (item.action == "EOS") {
+      path += encodeURIComponent(fileInput.getValue());
+
+    }
+    else if (item.action == "AAA") {
+      path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_file_aaa=";
+      path += encodeURIComponent(fileInput.getValue());
+
+    }
+
+    if (configInput.getValue()) {
+      path += "&fwconfig=";
+      path += encodeURIComponent(configInput.getValue());
+    }
+
+    if (geometryInput.getValue()) {
+      path += "&fwgeo=";
+      path += encodeURIComponent(geometryInput.getValue());
+    }
+
+    if (simGeoInput.getValue()) {
+      path += "&simgeo=";
+      path += encodeURIComponent(simGeoInput.getValue());
+    }
+    sap.m.URLHelper.redirect(path, false)
+    //  var oForm = document.forms[0];
+    //   oForm.Action.value = item.action;
+    //  oForm.submit();
+  }
 
   // =========================
   // LEFT PANEL
@@ -386,121 +776,62 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   var oLeftVBox = new sap.m.VBox({
 
           items: [
-            new sap.ui.core.HTML({ content: '<h2 class="cmsSubtitle">Open Event Display</h2>' }),
+            /*
+            new sap.m.Input({
+              id: "fileInput",
+              placeholder: "Enter file name(s), separated by spaces",
+              width: "100%",
+              liveChange: function (e) {
+                document.forms[0].File.value = e.getParameter("value");
+              },
+              showSuggestion: true,
+              suggestionItems: {
+                path: "/history",
+                template: new sap.ui.core.Item({ text: "{text}" })
+              },
+              suggest: function (oEvent) {
+                const sValue = oEvent.getParameter("suggestValue").toLowerCase();
+                const aFiltered = getHistory()
+                  .filter(h => h.toLowerCase().includes(sValue))
+                  .map(text => ({ text }));
+                oHistoryModel.setData({ history: aFiltered });
+              },
+              change: function (oEvent) {
+                const sValue = oEvent.getParameter("value");
+                if (sValue) {
+                  addToHistory(sValue);
+                }
+              }
+            }),*/,
             
-            fileInput,
-            oRadioGroup,
-            new sap.m.List({
-              id: "LoadAct",
-              inset: false,
+            new sap.m.VBox({
               items: [
-                { label: "Load File EOS", action: "EOS", desc: "Open CERN EOS LFN (/store/...) or PFN (/eos/...)", tooltip: "", icon: "img/eos-logo.png" },
-                { label: "Load File AAA", action: "AAA", desc: "Open AAA LFN (/store/...) via the regional EU redirector (falls back to global / US if the file is not found in the EU)", tooltip: "", icon: "img/xroot-logo.png" }
-              ].map(function (item) {
-                return new sap.m.StandardListItem({
-                  title: item.label,
-                  tooltip: item.tooltip,
-                  description: item.desc || "",
-                  info: item.action,
-                  tooltip: item.tooltip,
-                  icon: item.icon,
-                  type: "Active",
-                  press: function () {
-                    let path = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_file=";
-                    let fileInput = sap.ui.getCore().byId("fileInput");
-                    let configInput = sap.ui.getCore().byId("pathConfiguration");
-                    let geometryInput = sap.ui.getCore().byId("pathGeometry");
-                    let simGeoInput = sap.ui.getCore().byId("pathSimGeo");
-
-                    let match = true;
-
-                    this.setType(sap.m.ListType.Inactive);
-
-                    if (this.getTitle().startsWith("Load File")) {
-                      if (!(fileInput.getValue().startsWith("/eos") || fileInput.getValue().startsWith("/store"))) {
-                        let sValue = fileInput.getValue();
-
-                        let oDialog = new sap.m.Dialog({
-                          title: "Invalid Path",
-                          type: "Message",
-                          content: new sap.m.Text({ text: "The input path \"" + sValue + "\" is invalid.\nIt must start with /eos/ or /store." }),
-                          beginButton: new sap.m.Button({
-                            text: "OK",
-                            press: function () {
-                              oDialog.close();
-                            }
-                          }),
-                          afterClose: function () {
-                            oDialog.destroy(); // clean up
-                          }
-                        });
-
-                        oDialog.setContentHeight("200px");
-                        oDialog.open();
-                        return;
-
-                      }
-                    }
-
-                    if (this.getTitle() == "Load File EOS") {
-                      path += encodeURIComponent(fileInput.getValue());
-
-                      // check experimental port only for EOS and AAA
-                      if (oRadioGroup.getSelectedIndex() === 1) {
-                        path += "&port=";
-                        path += encodeURIComponent(6677);
-                      }
-                    }
-                    else if (this.getTitle() == "Load File AAA") {
-                      path = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_file_aaa=";
-                      path += encodeURIComponent(fileInput.getValue());
-
-                     // check experimental port only for EOS and AAA
-                      if (oRadioGroup.getSelectedIndex() === 1) {
-                        path += "&port=";
-                        path += encodeURIComponent(6677);
-                      }
-
-                    }
-                    else {
-                      path = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_sample=";
-                      // path += "/data2/CMSSW_12_5_relval-samples/";
-                      path += encodeURIComponent(this.getProperty("info"));
-                    }
-
-                    if (configInput.getValue()) {
-                      path += "&fwconfig=";
-                      path += encodeURIComponent(configInput.getValue());
-                    }
-
-                    if (geometryInput.getValue()) {
-                      path += "&fwgeo=";
-                      path += encodeURIComponent(geometryInput.getValue());
-                    }
-
-                    if (simGeoInput.getValue()) {
-                      path += "&simgeo=";
-                      path += encodeURIComponent(simGeoInput.getValue());
-                    }
-                    fileInput.setEnabled(false);
-                    var oPage = sap.ui.getCore().byId("mainPage");
-                   //oPage.setBusy(true);
-
-var oBusy = new sap.m.BusyDialog({
-    title: "Request Submitted",
-    text: "Request submitted to the Fireworks Web service."
-});
-
-oBusy.open()
-
-                    sap.m.URLHelper.redirect(path, false)
-                    //  var oForm = document.forms[0];
-                    //   oForm.Action.value = item.action;
-                    //  oForm.submit();
-                  }
-                });
-              })
-            }) // top list
+            stepLabel(1, "Event file path (required)"),
+            fileInput,
+            stepLabel(2, "CMSSW version of the data"),
+            oRadioGroup,
+            oOptionsPanel,
+            new sap.m.HBox({
+              renderType: "Bare",
+              items: [
+                new sap.ui.core.HTML({
+                  content: '<div class="accessSeg" data-sel="EOS" title="How to access the file">' +
+                    '<span class="thumb"></span>' +
+                    '<button type="button" data-v="EOS" class="on">EOS</button>' +
+                    '<button type="button" data-v="AAA">AAA</button></div>',
+                  afterRendering: renderAccessSeg
+                }),
+                oGoButton = new sap.m.Button({
+                  text: "Launch Event Display",
+                  type: "Emphasized",
+                  enabled: false,
+                  press: function () { openEventDisplay(selectedAction()); }
+                }).addStyleClass("goBtn")
+              ]
+            }).addStyleClass("goGroup"),
+            oGoDesc = new sap.m.Text({ text: LOAD_ACTIONS[0].desc }).addStyleClass("goDesc")
+              ]
+            }).addStyleClass("loadPanel")
 
 
 
@@ -510,141 +841,43 @@ oBusy.open()
   // =======================
   // SAMPLES
   // =======================
-  let bpath = "https://MACHINE/cmsShowWeb/revetor-frontend.pl?load_sample=";
-        var oRow1 = new sap.m.HBox({
-          items: [
-            new sap.m.Button({ text: "RelVal MuMu reco ", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValMuMureco.root", false) } }),
-            new sap.m.Button({ text: "RelVal MuMu miniaod", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValMuMuMiniaod.root", false) } })
-          ],
-          justifyContent: "Start",
-          renderType: "Bare"
-        });
+  let bpath = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_sample=";
 
-        // Second row
-        var oRow2 = new sap.m.HBox({
-          items: [
-            new sap.m.Button({ text: "RelVal RecHit reco", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValRecHitReco.root", false) } }),
-            new sap.m.Button({ text: "RelVal ZTT minioad", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValZTTMiniaod.root", false) } })
-          ],
-          justifyContent: "Start",
-          renderType: "Bare"
-        });
+  function sampleRow(label, samples) {
+    return new sap.m.HBox({
+      renderType: "Bare",
+      wrap: "Wrap",
+      alignItems: "Center",
+      items: [new sap.ui.core.HTML({ content: '<span class="sampleRowLabel">' + label + '</span>' })].concat(
+        samples.map(([text, file]) => new sap.m.Button({
+          text: text,
+          type: "Transparent",
+          icon: "sap-icon://play",
+          press: function () { sap.m.URLHelper.redirect(bpath + file, false); }
+        }))
+      )
+    }).addStyleClass("sampleRow");
+  }
 
-        var oRow3 = new sap.m.HBox({
-          items: [
-            new sap.m.Button({ text: "RelVal TTBar reco", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValTTBarReco.root", false) } }),
-            new sap.m.Button({ text: "RelVal ZEE miniaod", press: function (oEvent) { sap.m.URLHelper.redirect(bpath + "RelValZEEMiniaod.root", false) } })
-          ],
-          justifyContent: "Start",
-          renderType: "Bare"
-        });
-        // Combine rows in a VBox
-        var sampleList = new sap.m.VBox({
-          items: [oRow1, oRow2, oRow3],
-          renderType: "Bare" // optional: no extra wrapper padding
-        });
-
-
-
-  // =========================
-  // RIGHT PANEL
-  // =========================
-  var oRightVBox = new sap.m.VBox({
+  var sampleSection = new sap.m.VBox({
     items: [
-      new sap.m.Panel({
-        headerText: "Advanced Options",
-        expandable: true,
-        expanded: true,
-
-        content: [
-          new sap.ui.core.HTML({ content: '<h4 class="cmsSubtitle">FireworksWeb Configuration</h4>' }),
-          new sap.ui.layout.form.SimpleForm({
-            editable: true,
-            layout: "ResponsiveGridLayout",
-            content: [
-              new sap.m.Label({ text: "Configuration" }),
-              configInput
-            ]
-          }),
-
-          new sap.ui.core.HTML({ content: '<h4 class="cmsSubtitle">Geometry</h4>' }),
-          new sap.ui.layout.form.SimpleForm({
-            editable: true,
-            layout: "ResponsiveGridLayout",
-            content: [
-              new sap.m.Label({ text: "Reco Geometry" }),
-              geoInput
-            ]
-          }),
-
-          new sap.ui.layout.form.SimpleForm({
-            editable: true,
-            layout: "ResponsiveGridLayout",
-            content: [
-              new sap.m.Label({ text: "Simulation Geometry" }),
-              simGeoInput
-            ]
-          })
-        ]}),
-    new sap.ui.core.HTML({ content: '<br></br>' }),
-            new sap.ui.core.HTML({ content: '<h3 class="cmsSubtitle">Predefined Test Samples</h3>' }),
-
-            sampleList,
-            new sap.ui.core.HTML({ content: '<br></br>' }),
-            new sap.ui.core.HTML({ content: 'Status' })
+      new sap.ui.core.HTML({ content: '<div class="samplesTitle">No file handy? Try a sample event</div>' }),
+      new sap.ui.core.HTML({ content: '<div class="sampleNote">CMSSW RelVal events for a quick test. Uses default settings; the path and options above are ignored.</div>' }),
+      sampleRow("reco", [["MuMu", "RelValMuMureco.root"], ["RecHit", "RelValRecHitReco.root"], ["TTBar", "RelValTTBarReco.root"]]),
+      sampleRow("miniAOD", [["MuMu", "RelValMuMuMiniaod.root"], ["ZTT", "RelValZTTMiniaod.root"], ["ZEE", "RelValZEEMiniaod.root"]])
     ]
-  });
+  }).addStyleClass("samplesSection");
 
-
-        var oLink1 = new sap.m.Link({
-          text: "Mail to",
-          href: "mailto:cmstalk+visualization@cern.ch",
-          target: "cmstalk+visualization@cern.ch",
-          layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
-        });
-
-        var oLink2 = new sap.m.Link({
-          text: "CMS talk archive",
-          href: "https://cms-talk.web.cern.ch/c/offcomp/visualization/165",
-          layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
-        });
-
-        var oLink3 = new sap.m.Link({
-          text: "Low level interface",
-          href: "https://fireworks.cern.ch/cmsShowWeb/revetor.pl",
-          layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
-        });
-
-  
-  // Footer Bar with links
-  var oFooter = new sap.m.Bar({
-    contentMiddle: [
-      new sap.m.HBox({
-        //justifyContent: "SpaceBetween",
-        items:
-          [
-            oLink1,
-
-            new sap.m.Text({ text: " | " }),
-            oLink2,
-
-            new sap.m.Text({ text: " | " }),
-            oLink3
-          ]
-      })
-    ]
-  });
-
+  updateLoadState(fileInput.getValue());
+  updateOptionsHeader();
 
   // =========================
   // PAGE
   // =========================
-  var oPage = new sap.m.Page("mainPage", {
+  var oPage = new sap.m.Page({
     showHeader: false,
-    content: [oHeader, oLeftVBox, oRightVBox]
-  });  
-  
-  oPage.setFooter(oFooter);
+    content: [oHeader, oLeftVBox, sampleSection]
+  });
 
   new sap.m.Shell({ app: oPage }).placeAt("content");
 
