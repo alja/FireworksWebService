@@ -697,6 +697,10 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   geoInput.setModel(oHistoryModel);
   simGeoInput.setModel(oHistoryModel);
 
+  // Frontend script on whatever host served this page
+  // (fireworks.cern.ch, vocms0101.cern.ch, vocms0102.cern.ch, ...)
+  const FRONTEND_URL = window.location.origin + "/cmsShowWeb/revetor-frontend.pl";
+
   const LOAD_ACTIONS = [
     { action: "EOS", desc: "CERN EOS LFN (/store/...) or PFN (/eos/...)" },
     { action: "AAA", desc: "AAA LFN (/store/...) via the EU redirector, falling back to global / US if not found" }
@@ -706,7 +710,7 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   // OPEN EVENT DISPLAY
   // =========================
   function openEventDisplay(item) {
-    let path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_file=";
+    let path = FRONTEND_URL + "?load_file=";
     let fileInput = sap.ui.getCore().byId("fileInput");
     let configInput = sap.ui.getCore().byId("pathConfiguration");
     let geometryInput = sap.ui.getCore().byId("pathGeometry");
@@ -745,7 +749,7 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
 
     }
     else if (item.action == "AAA") {
-      path = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_file_aaa=";
+      path = FRONTEND_URL + "?load_file_aaa=";
       path += encodeURIComponent(fileInput.getValue());
 
     }
@@ -841,7 +845,7 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   // =======================
   // SAMPLES
   // =======================
-  let bpath = "https://vocms0102.cern.ch/cmsShowWeb/revetor-frontend.pl?load_sample=";
+  let bpath = FRONTEND_URL + "?load_sample=";
 
   function sampleRow(label, samples) {
     return new sap.m.HBox({
