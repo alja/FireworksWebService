@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cmsShowWeb Geometry</title>
+  <!-- UI5 Bootstrap --><script id="sap-ui-bootstrap" src="https://sdk.openui5.org/resources/sap-ui-core.js"
+    data-sap-ui-theme="sap_fiori_3_dark" data-sap-ui-libs="sap.m, sap.ui.layout"
+    data-sap-ui-xx-bindingSyntax="complex"></script>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      color: white;
+    }
+
+    .sapUiBody {
+      padding: 0 !important;
+    }
+
+    .fading-header {
+      font-size: 2rem;
+      text-align: center;
+      padding: 50px;
+      background-image: url('img/tracker.jpg');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .fading-background {
+      position: absolute;
+      inset: 0;
+      animation: fadeInBackground 10s forwards;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1;
+    }
+
+    @keyframes fadeInBackground {
+      to {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    .fading-header h2,
+    .fading-header p {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Geometry file -> mode -> launch, grouped in one panel */
+    .loadPanel {
+      box-sizing: border-box;
+      width: min(760px, calc(100% - 2rem));
+      margin: 1.5rem auto 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 1rem 1.25rem 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stepLabel {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0.9rem 0 0.4rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    .stepLabel .stepNum {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      background: #1a8cff;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    /* "Start Geometry Browser" GO button */
+    .goBtn.sapMBtn {
+      width: auto;
+      height: auto !important;
+      padding: 0 !important;
+      margin: 1.2rem 0 0;
+    }
+
+    .goBtn .sapMBtnInner {
+      width: 100%;
+      height: 3.6rem !important;
+      padding: 0 2.5rem !important;
+      border: none !important;
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, #2b9bff, #0a5fb8) !important;
+      box-shadow: 0 4px 14px rgba(26, 140, 255, 0.4) !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .goBtn:not(.sapMBtnDisabled):hover .sapMBtnInner {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(26, 140, 255, 0.55) !important;
+    }
+
+    .goBtn:not(.sapMBtnDisabled):active .sapMBtnInner {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px rgba(26, 140, 255, 0.4) !important;
+    }
+
+    .goBtn .sapMBtnContent,
+    .goBtn .sapMBtnText {
+      color: #fff !important;
+      font-size: 1.15rem !important;
+      font-weight: 700 !important;
+      line-height: normal !important;
+    }
+
+    .goBtn .sapMBtnContent::after {
+      content: "\279C";
+      margin-left: 0.6rem;
+      transition: margin-left 0.15s ease;
+    }
+
+    .goBtn:not(.sapMBtnDisabled):hover .sapMBtnContent::after {
+      margin-left: 0.9rem;
+    }
+
+    /* muted look while no geometry file is entered */
+    .goBtn.sapMBtnDisabled {
+      opacity: 1 !important;
+    }
+
+    .goBtn.sapMBtnDisabled .sapMBtnInner {
+      background: #3a3f45 !important;
+      box-shadow: none !important;
+    }
+
+    .goBtn.sapMBtnDisabled .sapMBtnContent,
+    .goBtn.sapMBtnDisabled .sapMBtnText {
+      color: #8a8f95 !important;
+    }
+
+    .goDesc {
+      display: block;
+      font-size: 0.85rem;
+      color: #999;
+      margin: 0.5rem 0 1rem;
+      padding: 0 0.2rem;
+    }
+    .homeLink {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      z-index: 3;
+      font-size: 0.95rem;
+      color: #cfe6ff;
+      text-decoration: none;
+    }
+
+    .homeLink:hover {
+      text-decoration: underline;
+    }
+
+    .userGuideBtn {
+      position: relative;
+      margin-top: 4px;
+      z-index: 3;
+      background: transparent;
+      color: white;
+      border: none;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .userGuideBtn:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+  </head>
+
+  <body>
+    <div id="content"></div>
+
+<script>
+sap.ui.getCore().attachInit(function () {
+
+  var oHeader = new sap.ui.core.HTML({
+    content: `
+      <div class="fading-header">
+        <div class="fading-background"></div>
+        <a class="homeLink" href="/">&larr; cmsShowWeb home</a>
+        <h2>cmsShowWeb Geometry @ CERN</h2>
+        <p>Browse a simulation geometry or check it for overlaps.</p>
+        <button class="userGuideBtn"
+          onclick="window.open('https://github.com/alja/FireworksWeb/blob/main/doc/GeoDoc.md','_blank')">
+          Documentation
+        </button>
+      </div>
+    `
+  });
+
+  // =========================
+  // SIMULATION GEOMETRY FILE
+  // =========================
+  const PREDEFINED_SIMGEO = [
+    "/eos/user/a/amraktad/geo/cmsSimGeomRun1.root",
+    "/eos/user/a/amraktad/geo/cmsSimGeomRun2.root",
+    "/eos/user/a/amraktad/geo/cmsSimGeo2026.root"
+  ];
+
+  // same localStorage key as the main gateway, so both pages share the history
+  const HISTORY_KEY = "inputSimGeoHistory";
+
+  function getHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function addToHistory(value) {
+    const history = [value, ...getHistory().filter(v => v !== value)].slice(0, 10);
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch (e) {}
+  }
+
+  function buildComboData(value) {
+    const s = (value || "").toLowerCase();
+    return [...new Set([...getHistory(), ...PREDEFINED_SIMGEO])]
+      .filter(v => v.toLowerCase().includes(s))
+      .map(v => ({ key: v, text: v }));
+  }
+
+  const oModel = new sap.ui.model.json.JSONModel({ simGeoItems: buildComboData("") });
+
+  const simGeoInput = new sap.m.ComboBox({
+    placeholder: "EOS path to simulation geometry file",
+    width: "100%",
+    items: {
+      path: "/simGeoItems",
+      template: new sap.ui.core.ListItem({ key: "{key}", text: "{text}", icon: "sap-icon://cloud" })
+    },
+    change: function (e) { updateState(e.getParameter("value")); }
+  });
+  simGeoInput.attachEvent("input", function (e) {
+    const v = e.getParameter("value");
+    oModel.setProperty("/simGeoItems", buildComboData(v));
+    updateState(v);
+  });
+  simGeoInput.attachSelectionChange(() => updateState(simGeoInput.getValue()));
+  simGeoInput.setModel(oModel);
+
+  // =========================
+  // MODE
+  // =========================
+  const MODES = [
+    { text: "Geometry browser", view: "3D:GeoTable",
+      desc: "Browse the volume hierarchy and show selected volumes in 3D." },
+    { text: "Overlap check", view: "3D:OverlapTable",
+      desc: "Scan the geometry for overlaps and extrusions (takes a few seconds) and show each one in 3D." }
+  ];
+
+  let oGoButton, oGoDesc;
+
+  const oModeGroup = new sap.m.RadioButtonGroup({
+    columns: 2,
+    selectedIndex: 0,
+    buttons: MODES.map(m => new sap.m.RadioButton({ text: m.text })),
+    select: function () { updateState(simGeoInput.getValue()); }
+  });
+
+  function selectedMode() {
+    return MODES[oModeGroup.getSelectedIndex()] || MODES[0];
+  }
+
+  // revetor-frontend.pl only accepts /eos/.../file.root here
+  function isValidPath(v) {
+    return /^\/eos\/\S*\.root$/.test((v || "").trim());
+  }
+
+  function updateState(v) {
+    const ok = isValidPath(v);
+    simGeoInput.setValueState(!v || ok ? "None" : "Error");
+    simGeoInput.setValueStateText("Path must look like /eos/.../file.root");
+    if (!oGoButton) return;
+    oGoButton.setEnabled(ok);
+    oGoDesc.setText(selectedMode().desc);
+  }
+
+  // =========================
+  // START
+  // =========================
+  function startGeometryBrowser() {
+    const simgeo = simGeoInput.getValue().trim();
+    if (!isValidPath(simgeo)) return;
+    addToHistory(simgeo);
+
+    const path = "revetor-frontend.pl?load_geo=1" +
+      "&simgeo=" + encodeURIComponent(simgeo) +
+      "&view=" + encodeURIComponent(selectedMode().view);
+    sap.m.URLHelper.redirect(path, false);
+  }
+
+  function stepLabel(n, text) {
+    return new sap.ui.core.HTML({
+      content: '<div class="stepLabel"><span class="stepNum">' + n + '</span>' + text + '</div>'
+    });
+  }
+
+  const oPanel = new sap.m.VBox({
+    items: [
+      stepLabel(1, "Simulation geometry file"),
+      simGeoInput,
+      stepLabel(2, "Mode"),
+      oModeGroup,
+      oGoButton = new sap.m.Button({
+        text: "Start Geometry Browser",
+        type: "Emphasized",
+        enabled: false,
+        press: startGeometryBrowser
+      }).addStyleClass("goBtn"),
+      oGoDesc = new sap.m.Text({ text: MODES[0].desc }).addStyleClass("goDesc")
+    ]
+  }).addStyleClass("loadPanel");
+
+  updateState(simGeoInput.getValue());
+
+  var oPage = new sap.m.Page({
+    showHeader: false,
+    content: [oHeader, oPanel]
+  });
+
+  new sap.m.Shell({ app: oPage }).placeAt("content");
+
+});
+</script>
+  </body>
+
+  </html>

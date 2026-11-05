@@ -25,13 +25,13 @@ if (defined $buf && $buf =~ /(\d+).*?(\d+)/)
   $buf =~ s/\r//g;
   $buf =~ s/\0//g;
    my $mark = "";
-
-        $mark = "Status: currently serving $2 total $1";
+     
+	$mark = "Status: currently serving $2 total $1";
 
 
     print $q->header('text/html');
 
-    my $file = "/var/www/html/cmsShowWeb/ui5-gateway-inc.html";
+    my $file = "/var/www/html/cmsShowWeb/ui5-common-gateway.html";
 
    open(my $fh, '<', $file)
     or die "Cannot open $file: $!";
@@ -42,8 +42,6 @@ if (defined $buf && $buf =~ /(\d+).*?(\d+)/)
 
    $html =~ s/MARK/$mark/g;
    my $xx =  $ENV{'HTTP_HOST'};
-   my $CERN_UPN   = $ENV{'OIDC_CLAIM_cern_upn'};
-   $html =~ s/TestUser/$CERN_UPN/g;
    $html =~ s/MACHINE/$xx/g;
 
    print $html;
@@ -79,4 +77,3 @@ else
 </html>
 EOF
 }
-
