@@ -884,11 +884,38 @@ var oRadioGroup = new sap.m.RadioButtonGroup({
   updateOptionsHeader();
 
   // =========================
+  // FOOTER (links, as in ui5-gateway-inc.html)
+  // =========================
+  function footerLink(text, href) {
+    return new sap.m.Link({
+      text: text,
+      href: href,
+      target: "_blank",
+      layoutData: new sap.m.FlexItemData({ styleClass: "linkPadding" })
+    });
+  }
+
+  var oFooter = new sap.m.Bar({
+    contentMiddle: [
+      new sap.m.HBox({
+        items: [
+          footerLink("Mail to", "mailto:cmstalk+visualization@cern.ch"),
+          new sap.m.Text({ text: " | " }),
+          footerLink("CMS talk archive", "https://cms-talk.web.cern.ch/c/offcomp/visualization/165"),
+          new sap.m.Text({ text: " | " }),
+          footerLink("Low level interface", "https://fireworks.cern.ch/cmsShowWeb/revetor.pl")
+        ]
+      })
+    ]
+  });
+
+  // =========================
   // PAGE
   // =========================
   var oPage = new sap.m.Page({
     showHeader: false,
-    content: [oHeader, oLeftVBox, sampleSection]
+    content: [oHeader, oLeftVBox, sampleSection],
+    footer: oFooter
   });
 
   new sap.m.Shell({ app: oPage }).placeAt("content");
