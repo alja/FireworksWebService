@@ -43,6 +43,9 @@ if (defined $buf && $buf =~ /(\d+).*?(\d+)/)
    $html =~ s/MARK/$mark/g;
    my $xx =  $ENV{'HTTP_HOST'};
    $html =~ s/MACHINE/$xx/g;
+   # CERN SSO login name (mod_auth_openidc claim)
+   my $CERN_UPN = $ENV{'OIDC_CLAIM_cern_upn'} // 'there';
+   $html =~ s/TestUser/$CERN_UPN/g;
 
    print $html;
 }
