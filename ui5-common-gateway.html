@@ -395,7 +395,13 @@ sap.ui.getCore().attachInit(function () {
   // HISTORY HELPERS
   // =========================
   function getHistory(key) {
-    return JSON.parse(localStorage.getItem(key) || "[]");
+    // Tolerate entries that are not a JSON array (another page on this origin, or an old version, may have written them).
+    try {
+      const v = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(v) ? v : [];
+    } catch (e) {
+      return [];
+    }
   }
 
   function addToHistory(key, value) {
@@ -560,11 +566,6 @@ oInputHistoryModel.setData({
 
  const fileInput = createInput("fileInput", "/fileHistory", "inputHistory");
 
- console.log(localStorage.getItem("inputHistory"));
- for (let i = 0; i < localStorage.length; i++) {
-  const key = localStorage.key(i);
-  console.log(key, JSON.parse(localStorage.getItem(key)));
-}
 
   const configInput = createInput("pathConfiguration", "/configHist", "inputConfigHistory");
 
